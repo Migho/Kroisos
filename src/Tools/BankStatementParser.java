@@ -52,7 +52,7 @@ public class BankStatementParser {
                             line += message;
                         }
                         transaction.setMessage(line);
-                    } else if(line.substring(5).equals("PALVELUMAKSU")) {
+                    } else if(line.length()>5 && line.substring(5).equals("PALVELUMAKSU")) {
                         transaction.setMessage("Pankkimaksut");
                     } else System.out.println("UNDEFINED TRANSACTION METHOD");
                     list.add(transaction);

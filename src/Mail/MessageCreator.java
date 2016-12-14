@@ -12,9 +12,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * Created by migho on 28.9.2016.
- */
 public class MessageCreator {
 
     TextFileReader tReader;
@@ -43,94 +40,81 @@ public class MessageCreator {
     }
 
     /**
-     * Will create and send new payment instructions (In other words, debts which has no due date).
-     * @param list List of Debts
-     * @return will return all unsuccessfully sent debts. Null if invalid file was specified in constructor.
+     * Send list of mails, and retry each failed ones 2 more times.
+     * @param debts List of mails.
+     * @return Will return a list of failed debts.
      */
-    public List<Debt> sendPaymentInstructions(List<Debt> list) {
-        return sendSetOfMails(list, true, false);
-    }
-
-    /**
-     * Will create and send new payment reminders (In other words, debts which has status LATE).
-     * @param list List of Debts
-     * @return will return all unsuccessfully sent debts. Null if invalid file was specified in constructor.
-     */
-    public List<Debt> sendPaymentReminder(List<Debt> list) {
-        return sendSetOfMails(list, false, true);
-    }
+    public List<Debt> sendListOfMails(List<Debt> debts) { return sendListOfMails(debts, 3); }
 
     //Method for sending list of mails. Uses "formAndSendMail" -method for each debt.
-    private List<Debt> sendSetOfMails(List<Debt> list, boolean onlyNullDueDate, boolean onlyLateStatus) {
+
+    /**
+     * Send list of mails.
+     * @param debts List of mails.
+     * @param amountOfRetries How many times to retry failed mails.
+     * @return Will return a list of failed debts.
+     */
+    public List<Debt> sendListOfMails(List<Debt> debts, int amountOfRetries) {
+        if(amountOfRetries<=0) return debts;
         if(tReader == null) return null;
         List<Debt> unsuccessfulMails = new ArrayList<>();
         sStarter = new SessionStarter(1);             //set 0 to disable preview
-
-        for(Debt d : list) {
-            ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE reference_number="+d.getReferenceNumber()+";");
-            try {
-                if(rs.next()) {
-                    Date date = rs.getDate("due_date");
-                    String status = rs.getString("status");
-                    if(date == null && onlyNullDueDate) {
-                        int result = formAndSendMail(d);
-                        if(result < 0) unsuccessfulMails.add(d);
-                    } else if(date != null && status.equals("LATE") && onlyLateStatus) {
-                        d.dueDate = date;
-                        int result = formAndSendMail(d);
-                        if(result < 0) unsuccessfulMails.add(d);
-                    }
-                    /*It shouldn't be necessary to worry about null date + late status at the same
-                    time, since debt without due date means no payment instructions are send.*/
-                }
-            } catch (SQLException e) {
-                System.out.println("No debt found with this reference number");
-                e.printStackTrace();
+        for(Debt d : debts) if(formAndSendMail(d) < 0) unsuccessfulMails.add(d);
+        if(unsuccessfulMails.size()>0) {
+            if(amountOfRetries==1) {
+                System.out.println(unsuccessfulMails + " MAILS FAILED PERMANENTLY!");
+                return unsuccessfulMails;
             }
+            System.out.println("Couldn't send " + unsuccessfulMails.size() + " mail(s). Gonna retry now");
+            sendListOfMails(unsuccessfulMails, amountOfRetries-1);
         }
-        return unsuccessfulMails;
+        return debts;
     }
 
-    //This method will take care of forming and sending one message, created from the debt.
-    private int formAndSendMail(Debt d) {
+    /**
+     * This method will take care of forming and sending one message, created from the debt.
+     * @param debt Debt used for the information in the mail
+     * @return 0 if successful, < 0 if failed.
+     */
+    private int formAndSendMail(Debt debt) {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        HashMap<String, String> changeList = new HashMap<>();
-        changeList.put("§REFERENCENUMBER§", Integer.toString(d.getReferenceNumber()));
-        changeList.put("§NAME§", d.name);
-        changeList.put("§SUM§", String.format("%.2f", d.sum));
-        changeList.put("§EVENTNAME§", eManager.getEventName(d.eventNumber));
-        changeList.put("§EVENTDESC§", eManager.getEventDescription(d.eventNumber));
 
+        //replace this information from text
+        HashMap<String, String> changeList = new HashMap<>();
+        changeList.put("§REFERENCENUMBER§", Integer.toString(debt.getReferenceNumber()));
+        changeList.put("§NAME§", debt.name);
+        changeList.put("§SUM§", String.format("%.2f", debt.sum));
+        changeList.put("§EVENTNAME§", eManager.getEventName(debt.eventNumber));
+        changeList.put("§EVENTDESC§", eManager.getEventDescription(debt.eventNumber));
+        changeList.put("§INFO§", debt.info);
+        //SQLsdf = SQL format for SQL writing, daySdf = format for the message
         SimpleDateFormat SQLsdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat daySdf = new SimpleDateFormat("dd.MM.YYYY");
         Calendar c = Calendar.getInstance();
-        if(d.dueDate == null) {
+        if(debt.dueDate == null) {  //if debt has no due date, it will be set.
             c.setTime(new Date());
             c.add(Calendar.DATE, expDays);
-            changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
-        } else {
-            c.setTime(d.dueDate);
-            changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
-        }
-        System.out.println("Sending message to " + d.mail + "... ");
+        } else c.setTime(debt.dueDate);
+        changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
+
+        //starting message sending at this point
+        System.out.println("Sending message to " + debt.mail + "... ");
         String message = tReader.textAdapter(changeList);
         String title = tReader.getTitle(changeList);
-        int messageResult = sStarter.sendMessage(d.mail, title, message);
+        int messageResult = sStarter.sendMessage(debt.mail, title, message);
         if (messageResult == 0) {
-            System.out.println("Message sent successfully");
-            sqlManager.runSQLUpdate("UPDATE Debt SET due_date='" + SQLsdf.format(c.getTime()) +
-                    "',last_mail_sent='" + SQLsdf.format(new Date()) +
-                    "' WHERE reference_number=" + d.getReferenceNumber() + ";");
+            System.out.println("Message sent successfully");//TOIMIIKO SQL AIKA???
+            sqlManager.runSQLUpdate("UPDATE Debt SET due_date=?, last_mail_sent=? WHERE reference_number=?", new Object[] {c.getTime(), new Date(), debt.getReferenceNumber()});
             //update due date and
         } else {
             System.out.println("Couldn't send message. Error code: " + messageResult);
             return -1;
         }
-        messageSaver(d.name, d.mail, d.getReferenceNumber(), d.eventNumber, title, message, messageResult);
+        messageSaver(debt.name, debt.mail, debt.getReferenceNumber(), debt.eventNumber, title, message, messageResult);
         return 0;
     }
 
@@ -146,12 +130,12 @@ public class MessageCreator {
             out.println("EOF. Ended with a code of " + messageResult);
             out.close();
             sqlManager.runSQLUpdate("INSERT INTO Mail (mail, reference_number, subject, path, status)" +
-                    "VALUES ('"+mailTo+"',"+referenceNumber+",'"+title+"','"+path+"','"+messageResult+"');");
+                    "VALUES (?, ?, ?, ?, ?)", new Object[] {mailTo, referenceNumber, title, path, messageResult});
         } catch (FileNotFoundException e) {
             System.out.println("couldn't write info of " + name);
             e.printStackTrace();
             sqlManager.runSQLUpdate("INSERT INTO Mail (mail, reference_number, subject, path, status)" +
-                    "VALUES ('"+mailTo+"',"+referenceNumber+",'"+title+"','ERROR','"+messageResult+"');");
+                    "VALUES (?, ?, ?, ?, ?)", new Object[] {mailTo, referenceNumber, title, "ERROR", messageResult});
             return -200;
         }
         return 0;

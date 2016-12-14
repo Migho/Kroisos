@@ -11,13 +11,20 @@ public class SQLManager {
     static final String DB_URL = "jdbc:mysql://localhost/bookkeeping_TKOaly";
 
     static final String USER = "local";
-    static final String PASS = "1234";
+    static final String PASS = "1234";  //:-)
     static Statement stmt = null;
     static Connection conn = null;
 
+    public static ResultSet runSQLQuery(String statement, Object[] parameters) {
+        try {
+            return getPreparedStatement(statement, parameters).executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-
-    public static ResultSet runSQLQuery(String statement) {
+    public static ResultSet runSQLQueryOldx(String statement) {
         ResultSet rs = null;
         try {
             if(stmt == null) connect();
@@ -31,7 +38,36 @@ public class SQLManager {
         return rs;
     }
 
-    public static int runSQLUpdate(String statement) {
+    public static int runSQLUpdate(String statement, Object[] parameters) {
+        try {
+            return getPreparedStatement(statement, parameters).executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private static PreparedStatement getPreparedStatement(String statement, Object[] parameters) {
+        try {
+            if(stmt == null) connect();
+            else if(stmt.isClosed()) connect();
+            PreparedStatement stmt = conn.prepareStatement(statement);
+            for(int i=0; i<parameters.length; i++) {
+                /*if(parameters[i] instanceof String) stmt.setString(i + 1, (String)parameters[i]);
+                if(parameters[i] instanceof Integer) stmt.setInt(i + 1, (int)parameters[i]);
+                if(parameters[i] instanceof Double) stmt.setDouble(i + 1, (Double)parameters[i]);
+                if(parameters[i] instanceof String) stmt.set(i + 1, (String)parameters[i]);*/
+                stmt.setObject(i + 1, parameters[i]);
+            }
+            //System.out.println(stmt.toString());
+            return stmt;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int runSQLUpdateOldx(String statement) {
         int result = -1;
         try {
             if(stmt == null) connect();

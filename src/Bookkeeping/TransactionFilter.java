@@ -50,6 +50,7 @@ public class TransactionFilter {
     }
 
     private String askType(String info) {
+        //väliaikainen ratkaisu; kehitellään sitte webbikäliin parempi
         System.out.println("Unknown transaction: " + info);
         System.out.println("4.  Saadut ennakot                  25. Muu huvitoiminta");
         System.out.println("5.  Maksetut ennakot                26. Jäsenmaksut");
@@ -77,7 +78,7 @@ public class TransactionFilter {
         while(true) {
             try {
                 Integer.parseInt(s);
-                ResultSet rs = SQLManager.runSQLQuery("SELECT name FROM Account WHERE id="+s);
+                ResultSet rs = SQLManager.runSQLQuery("SELECT name FROM Account WHERE id=?;", new Object[] {s});
                 try {
                     if(rs.next()) {
                         return rs.getString("name");

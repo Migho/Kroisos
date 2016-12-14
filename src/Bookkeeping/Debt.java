@@ -14,6 +14,7 @@ public class Debt implements Comparable<Object>{
     public Double sum = 0.0;
     public String externalInfo = "";
     public Date dueDate;
+    public String info;
 
     public int getReferenceNumber() {
         return eventNumber*10000 + participantNumber*10 + checkDigit;

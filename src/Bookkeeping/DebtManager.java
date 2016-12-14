@@ -8,7 +8,32 @@ public class DebtManager {
 
     public static List<Debt> getDebts() {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt;");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt;", new Object[] {});
+        try {
+            while(rs.next()) {
+                list.add(fetchDebt(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static List<Debt> getDebts(String status) {
+        List<Debt> list = new ArrayList<>();
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE status=?", new Object[] {status});
+        try {
+            while(rs.next()) {
+                list.add(fetchDebt(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    public static List<Debt> getEventDebtsWithZeroSentMessages(int event) {
+        List<Debt> list = new ArrayList<>();
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE status=?, due_date IS NULL;", new Object[] {"PENDING"});
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -20,7 +45,7 @@ public class DebtManager {
     }
     public static Debt getDebt(long referenceNumber) {
         Debt debt = new Debt();
-        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE reference_number="+referenceNumber+";");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE reference_number=?", new Object[] {referenceNumber});
         try {
             if(rs.next()) {
                 debt = fetchDebt(rs);
@@ -31,10 +56,10 @@ public class DebtManager {
         return debt;
     }
 
-    public static int addDebt(Debt debt) {
-        int result = SQLManager.runSQLUpdate("INSERT INTO Debt (reference_number, event, name, mail," +
-                "sum, status, info) VALUES ("+debt.getReferenceNumber()+","+debt.eventNumber+",'"+
-                debt.name+"','"+debt.mail+"',"+debt.sum+",'"+"PENDING"+"','"+debt.externalInfo+"');");
+    public static int addDebt(Debt d) {
+        int result = SQLManager.runSQLUpdate("INSERT INTO Debt (reference_number, event, name, mail, sum, status, info)" +
+                        "VALUES ?, ?, ?, ?, ?, ?, ?",
+                new Object[] {d.getReferenceNumber(), d.eventNumber, d.name, d.mail, d.sum, "NOT_SENT", d.externalInfo});
         if(result != 1) System.out.println("Update affected " + result + " rows.");
         return 0;
     }
@@ -65,7 +90,7 @@ public class DebtManager {
     }
     public List<Debt> getAllEventDebts(int eventNumber) {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE event="+eventNumber+";");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE event=?;", new Object[] {eventNumber});
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -77,11 +102,11 @@ public class DebtManager {
     }
 
     public static int markDebtPaid(long referenceNumber, double sum) {
-        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE reference_number="+referenceNumber+";");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Debt WHERE reference_number=?;", new Object[] {referenceNumber});
         try {
             if(rs.next()) {
                 String status = rs.getString("status");
-                if(!status.equals("PENDING") && !status.equals("LATE")) {
+                if(!status.equals("PENDING") && !status.equals("LATE") && !status.equals("ACCRUAL")) {
                     System.out.println("Requested to update " + status + " to PAID");
                     System.out.println("Status is not updated.");
                     return -1;
@@ -90,7 +115,7 @@ public class DebtManager {
                 if(debtSum > sum+0.005 || debtSum < sum-0.005) {
                     System.out.println("Requested to update cell with wrong amount");
                     System.out.println("Status is updated to AMOUNT_ERR.");
-                    return SQLManager.runSQLUpdate("UPDATE Debt SET status='AMOUNT_ERR' WHERE reference_number="+referenceNumber+";");
+                    return SQLManager.runSQLUpdate("UPDATE Debt SET status=? WHERE reference_number=?;", new Object[] {"AMOUNT_ERR", referenceNumber});
                 }
             } else {
                 return 0;
@@ -98,7 +123,7 @@ public class DebtManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return SQLManager.runSQLUpdate("UPDATE Debt SET status='PAID' WHERE reference_number="+referenceNumber+";");
+        return SQLManager.runSQLUpdate("UPDATE Debt SET status=? WHERE reference_number=?;", new Object[] {"PAID", referenceNumber});
     }
 
     private static Debt fetchDebt(ResultSet rs) {
@@ -110,6 +135,8 @@ public class DebtManager {
             debt.mail = rs.getString("mail");
             debt.eventNumber = rs.getInt("event");
             debt.sum = rs.getDouble("sum");
+            debt.info = rs.getString("info");
+            debt.dueDate = rs.getDate("due_date");
         } catch (SQLException e) {
             e.printStackTrace();
         }

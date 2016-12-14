@@ -19,10 +19,7 @@ public class EventManager {
     }
 
     public static String getType(int eventNumber) {
-        //String s = getStringField(eventNumber, "account");
-        //for(Transaction.Type a : Transaction.Type.values())
-        //    if (a.toString().equals(s)) return a;
-        ResultSet rs = SQLManager.runSQLQuery("SELECT Account.name FROM Event INNER JOIN Account WHERE event_number=" + eventNumber + " AND Event.account = Account.id;");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT Account.name FROM Event INNER JOIN Account WHERE event_number=? AND Event.account = Account.id;", new Object[] {eventNumber});
         try {
             if (rs.next()) {
                 return rs.getString("Account.name");
@@ -34,7 +31,7 @@ public class EventManager {
     }
 
     private static String getStringField(int eventNumber, String columnName) {
-        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Event WHERE event_number="+eventNumber+";");
+        ResultSet rs = SQLManager.runSQLQuery("SELECT * FROM Event WHERE event_number=?;", new Object[] {eventNumber});
         try {
             if(rs.next()) {
                 return rs.getString(columnName);

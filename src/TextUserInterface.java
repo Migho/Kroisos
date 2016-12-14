@@ -23,11 +23,11 @@ public class TextUserInterface {
         while(!exit) {
             System.out.println("Enter number of your choice: ");
             System.out.println("    1: Create new debts with event number and emails,");
-            System.out.println("    2: Send new payment instructions with event number,");
-            System.out.println("    3: Send message with reference number,");
+            System.out.println("    2: Send new messages,");
+            System.out.println("    3: null,");
             System.out.println("    4: generate reference number,");
             System.out.println("    5. Chance all statuses of debts that are late to 'LATE'");
-            System.out.println("    6. Send payment reminders,");
+            System.out.println("    6. null,");
             System.out.println("    7. null,");
             System.out.println("    8: Parse RV statements from PDF and create excel out of it,");
             System.out.println("    9: Parse bank statements from PDF and create excel file out of it,");
@@ -38,7 +38,7 @@ public class TextUserInterface {
                     createEventDebts();
                     break;
                 case 2:
-                    sendPaymentInstructions();
+                    sendPaymentMails();
                     break;
                 case 3:
                     sendOneMessage();
@@ -50,7 +50,6 @@ public class TextUserInterface {
                     updateStatuses();
                     break;
                 case 6:
-                    sendPaymentReminders();
                     break;
                 case 7:
                     break;
@@ -86,30 +85,8 @@ public class TextUserInterface {
         return 0;
     }
 
-    private static int sendPaymentInstructions() {
-        System.out.println("Please give event number: ");
-        int eventNumber = getInteger();
-        System.out.println("Please enter message text file: ");
-        String file = sc.nextLine();
-        MessageCreator mCreator;
-        //if changing expiration day is necessary, use mCreator.setExpirationDay. Default is 14 days.
-        try {
-            mCreator = new MessageCreator(file);
-        } catch (FileNotFoundException e) {
-            System.out.println("Couldn't send mails due to file reading error.");
-            return -2;
-        }
-        List<Debt> debtsNotSend = dManager.getAllEventDebts(eventNumber);
-        debtsNotSend = mCreator.sendPaymentInstructions(debtsNotSend);
-        for(int i=0; debtsNotSend.size() != 0 && i<3; i++) {
-            System.out.println("Couldn't send " + debtsNotSend.size() + " mail(s). Gonna retry now");
-            debtsNotSend = mCreator.sendPaymentInstructions(debtsNotSend);
-        }
-        if(debtsNotSend.size() != 0) System.out.println(debtsNotSend.size() + " MAIL(S) FAILED PERMANENTLY !");
-        return 0;
-    }
 
-    private static int sendPaymentReminders() {
+    private static int sendPaymentMails() {
         System.out.println("Please enter message text file: ");
         String file = sc.nextLine();
         MessageCreator mCreator;
@@ -119,42 +96,33 @@ public class TextUserInterface {
             System.out.println("Couldn't send mails due to file reading error.");
             return -2;
         }
-        List<Debt> debtsNotSend = dManager.getDebts();
-        //System.out.println("NUMBER OF PAYMENTS: " + debtsNotSend.size());
-        debtsNotSend = mCreator.sendPaymentReminder(debtsNotSend);
-        for(int i=0; debtsNotSend.size() != 0 && i<3; i++) {
-            System.out.println("Couldn't send " + debtsNotSend.size() + " mail(s). Gonna retry now");
-            debtsNotSend = mCreator.sendPaymentReminder(debtsNotSend);
+
+        System.out.println("Debts with status 1. 'NOT_SENT', 2. 'LATE', 3. 'ACCRUAL'");
+        int userInput = getInteger();
+        List<Debt> debts = null;
+        if(userInput == 1) debts = dManager.getDebts("NOT_SENT");
+        else if(userInput == 2) debts = dManager.getDebts("LATE");
+        else if(userInput == 3) debts = dManager.getDebts("ACCRUAL");
+        else {
+            System.out.println("not a valid number, idiot.");
+            return -1;
         }
-        if(debtsNotSend.size() != 0) System.out.println(debtsNotSend.size() + " MAIL(S) FAILED PERMANENTLY !");
+
+        System.out.println("Any event preference? Write 0 if none.");
+        userInput = getInteger();
+        if(userInput != 0) {
+            for(Debt d : debts) {
+                if(d.eventNumber != userInput) debts.remove(d);
+            }
+        }
+
+        System.out.println("NUMBER OF PAYMENTS: " + debts.size());
+        mCreator.sendListOfMails(debts);
         return 0;
     }
 
     //do this again
     private static int sendOneMessage() {
-        System.out.println("Please give reference number: ");
-        int referenceNumber = getInteger();
-        Debt temp = dManager.getDebt(referenceNumber);
-        if(temp.getReferenceNumber() != referenceNumber) {
-            System.out.println("No such reference number...");
-            return -1;
-        }
-        List<Debt> a = new ArrayList<>();
-        a.add(temp);
-        System.out.println("Please enter message text file: ");
-        String file = sc.nextLine();
-        MessageCreator mCreator;
-        try {
-            mCreator = new MessageCreator(file);
-        } catch (FileNotFoundException e) {
-            System.out.println("Couldn't send mails due to file reading error.");
-            return -2;
-        }
-        a = mCreator.sendPaymentInstructions(a);
-        if(a.size()!=0) {
-            System.out.println("ERROR: Couldn't send mail.");
-            return -3;
-        }
         return 0;
     }
 
@@ -172,7 +140,7 @@ public class TextUserInterface {
         ExcelWriter excelWriter = new ExcelWriter();
         ArrayList<Transaction> list = parser.getTransfers();
         for(Transaction t : list) {
-            if(!t.getMessage().equals("Palvelumaksut") && !t.getMessage().equals("???"))
+            if(t.getMessage() != null && !t.getMessage().equals("Palvelumaksut") && !t.getMessage().equals("???"))
                 t.setMessage("Ruokavälityksen tuotot");
         }
         excelWriter.save(list);
@@ -205,14 +173,13 @@ public class TextUserInterface {
     }
 
     private static int getInteger() {
-        while(true) {
-            try {
-                int a = sc.nextInt();
-                sc.nextLine();
-                return a;
-            } catch (Exception e) {
-                System.out.println("Please enter an integer: ");
-            }
+        try {
+            int a = sc.nextInt();
+            sc.nextLine();
+            return a;
+        } catch (Exception e) {
+            System.out.println("Please enter an integer: ");
+            return getInteger();
         }
     }
 
