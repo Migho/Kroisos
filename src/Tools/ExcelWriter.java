@@ -16,7 +16,21 @@ import java.util.ArrayList;
 
 public class ExcelWriter {
 
+    /**
+     * This method will create excel file "output.xls" containing given
+     * transactions (ready to be pasted to bookkeeping).
+     * @param list List of transactions.
+     * @return Will return 0 if successful, -1 for file writing error, and -2 for IOException.
+     */
     public static int save(ArrayList<Transaction> list) { return save(list, "output.xls"); }
+
+    /**
+     * This method will create excel file "filename.xls" containing given
+     * transactions (ready to be pasted to bookkeeping).
+     * @param list List of transactions.
+     * @param fileName name of the file.
+     * @return Will return 0 if successful, -1 for file writing error, and -2 for IOException.
+     */
     public static int save(ArrayList<Transaction> list, String fileName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("TKO-äly");
@@ -50,8 +64,10 @@ public class ExcelWriter {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return -1;
         } catch (IOException e) {
             e.printStackTrace();
+            return -2;
         }
         return 0;
     }

@@ -46,8 +46,6 @@ public class MessageCreator {
      */
     public List<Debt> sendListOfMails(List<Debt> debts) { return sendListOfMails(debts, 3); }
 
-    //Method for sending list of mails. Uses "formAndSendMail" -method for each debt.
-
     /**
      * Send list of mails.
      * @param debts List of mails.
@@ -91,8 +89,6 @@ public class MessageCreator {
         changeList.put("§EVENTNAME§", eManager.getEventName(debt.eventNumber));
         changeList.put("§EVENTDESC§", eManager.getEventDescription(debt.eventNumber));
         changeList.put("§INFO§", debt.info);
-        //SQLsdf = SQL format for SQL writing, daySdf = format for the message
-        SimpleDateFormat SQLsdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat daySdf = new SimpleDateFormat("dd.MM.YYYY");
         Calendar c = Calendar.getInstance();
         if(debt.dueDate == null) {  //if debt has no due date, it will be set.
@@ -107,7 +103,7 @@ public class MessageCreator {
         String title = tReader.getTitle(changeList);
         int messageResult = sStarter.sendMessage(debt.mail, title, message);
         if (messageResult == 0) {
-            System.out.println("Message sent successfully");//TOIMIIKO SQL AIKA???
+            System.out.println("Message sent successfully");
             sqlManager.runSQLUpdate("UPDATE Debt SET due_date=?, last_mail_sent=? WHERE reference_number=?", new Object[] {c.getTime(), new Date(), debt.getReferenceNumber()});
             //update due date and
         } else {
@@ -118,7 +114,7 @@ public class MessageCreator {
         return 0;
     }
 
-    //This method saves the message to the computer and to the SQL Mail -table
+    //This method saves the message to the computer and stores information of the mail to the Mail SQL-table.
     private int messageSaver(String name, String mailTo, int referenceNumber, int event, String title, String message, int messageResult) {
         if(!new File("mails/" + event).exists()) new File("mails/" + event).mkdirs();
         Date d = new Date();

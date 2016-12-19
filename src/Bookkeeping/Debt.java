@@ -2,16 +2,13 @@ package Bookkeeping;
 
 import java.util.Date;
 
-/**
- * Created by migho on 27.9.2016.
- */
-public class Debt implements Comparable<Object>{
+public class Debt implements Comparable<Object> {
     public int eventNumber = 0;
     public int participantNumber = 0;
     public int checkDigit = 0;
     public String name = "";
     public String mail = "";
-    public Double sum = 0.0;
+    public Double sum = 0.0; //pyöristysvirheitä ei pitäisi tapahtua mutta varmaan silti järkevää muuttaa integeriksi?
     public String externalInfo = "";
     public Date dueDate;
     public String info;
@@ -44,8 +41,6 @@ public class Debt implements Comparable<Object>{
 
     @Override
     public boolean equals(Object object) {
-        if (object != null && object instanceof Debt)
-            return this.getReferenceNumber() == ((Debt) object).getReferenceNumber();
-        return false;
+        return object != null && object instanceof Debt && this.getReferenceNumber() == ((Debt) object).getReferenceNumber();
     }
 }

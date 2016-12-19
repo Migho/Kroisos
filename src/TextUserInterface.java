@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by migho on 29.9.2016.
- */
 public class TextUserInterface {
     private static DebtManager dManager;
     private static Scanner sc = new Scanner(System.in);
@@ -24,11 +21,11 @@ public class TextUserInterface {
             System.out.println("Enter number of your choice: ");
             System.out.println("    1: Create new debts with event number and emails,");
             System.out.println("    2: Send new messages,");
-            System.out.println("    3: null,");
+            System.out.println("    3: ");
             System.out.println("    4: generate reference number,");
-            System.out.println("    5. Chance all statuses of debts that are late to 'LATE'");
-            System.out.println("    6. null,");
-            System.out.println("    7. null,");
+            System.out.println("    5. Chance all statuses of debts which are late to 'LATE'");
+            System.out.println("    6. ");
+            System.out.println("    7. ");
             System.out.println("    8: Parse RV statements from PDF and create excel out of it,");
             System.out.println("    9: Parse bank statements from PDF and create excel file out of it,");
             System.out.println("    0: Exit.");

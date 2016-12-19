@@ -3,7 +3,7 @@ package Bookkeeping;
 import scala.Int;
 
 /**
- * This class will generate valid reference numbers.
+ * This class will generate a set of valid reference numbers.
  */
 public class ReferenceNumberGenerator {
 
@@ -22,11 +22,12 @@ public class ReferenceNumberGenerator {
      *      XXXX = event number
      *      YYY = ParticipantNumber
      *      R = Check digit
-     * @return Reference number as a String
+     * @return Reference number as int.
      */
     public int getReferenceNumber() {
         return eventNumber*10000 + participantNumber*10 + checkDigit;
     }
+
     public int getEventNumber() { return eventNumber; }
     public int getParticipantNumber() { return participantNumber; }
     public int getCheckDigit() { return checkDigit; }

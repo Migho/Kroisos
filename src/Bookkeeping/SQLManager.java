@@ -24,20 +24,6 @@ public class SQLManager {
         return null;
     }
 
-    public static ResultSet runSQLQueryOldx(String statement) {
-        ResultSet rs = null;
-        try {
-            if(stmt == null) connect();
-            else if(stmt.isClosed()) connect();
-            //PreparedStatement ps = new conn.createStruct(statement);
-
-            rs = stmt.executeQuery(statement);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return rs;
-    }
-
     public static int runSQLUpdate(String statement, Object[] parameters) {
         try {
             return getPreparedStatement(statement, parameters).executeUpdate();
@@ -53,10 +39,6 @@ public class SQLManager {
             else if(stmt.isClosed()) connect();
             PreparedStatement stmt = conn.prepareStatement(statement);
             for(int i=0; i<parameters.length; i++) {
-                /*if(parameters[i] instanceof String) stmt.setString(i + 1, (String)parameters[i]);
-                if(parameters[i] instanceof Integer) stmt.setInt(i + 1, (int)parameters[i]);
-                if(parameters[i] instanceof Double) stmt.setDouble(i + 1, (Double)parameters[i]);
-                if(parameters[i] instanceof String) stmt.set(i + 1, (String)parameters[i]);*/
                 stmt.setObject(i + 1, parameters[i]);
             }
             //System.out.println(stmt.toString());
@@ -65,18 +47,6 @@ public class SQLManager {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static int runSQLUpdateOldx(String statement) {
-        int result = -1;
-        try {
-            if(stmt == null) connect();
-            else if(stmt.isClosed()) connect();
-            result = stmt.executeUpdate(statement);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     private static int connect() {
@@ -112,14 +82,16 @@ public class SQLManager {
             try{
                 if(stmt!=null)
                     stmt.close();
-            }catch(SQLException se2){}// nothing we can do
+            } catch(SQLException se2){
+                System.out.println(se2);
+            }
             try{
                 if(conn!=null)
                     conn.close();
             }catch(SQLException se){
                 se.printStackTrace();
-            }//end finally try
-        }//end try
+            }
+        }
         return 0;
     }
 }
