@@ -21,11 +21,11 @@ public class TextFileReader {
     public int readFile(String filePath) {
         File file = new File(filePath);
         try {
-            Scanner lukija = new Scanner(file);
+            Scanner scanner = new Scanner(file);
             text = new String();
-            if(lukija.hasNextLine()) title = lukija.nextLine();   //First line = title of the mail
-            while (lukija.hasNextLine()) text = text + lukija.nextLine() + "\r\n";
-            lukija.close();
+            if(scanner.hasNextLine()) title = scanner.nextLine();   //First line = title of the mail
+            while (scanner.hasNextLine()) text = text + scanner.nextLine() + "\r\n";
+            scanner.close();
         } catch(java.io.FileNotFoundException e) {
             System.out.println("File not found: " + filePath);
             return -1;
