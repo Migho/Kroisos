@@ -7,7 +7,7 @@ import javax.mail.internet.*;
 /**
  *
  */
-public class Sender {
+class Sender {
 
     private static String HOST = "smtp.helsinki.fi";
     private static String PORT = "587";
@@ -15,7 +15,7 @@ public class Sender {
 
     private static Properties properties = new Properties();
     private static Session session;
-    private static String mailAddress = new String();
+    private static String mailAddress = "";
     private static String domain;
 
     /**

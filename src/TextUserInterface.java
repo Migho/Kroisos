@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class TextUserInterface {
+class TextUserInterface {
     private static DebtManager dManager;
     private static Scanner sc = new Scanner(System.in);
 
@@ -96,7 +96,7 @@ public class TextUserInterface {
 
         System.out.println("Debts with status 1. 'NOT_SENT', 2. 'LATE', 3. 'ACCRUAL'");
         int userInput = getInteger();
-        List<Debt> debts = null;
+        List<Debt> debts;
         if(userInput == 1) debts = dManager.getDebts("NOT_SENT");
         else if(userInput == 2) debts = dManager.getDebts("LATE");
         else if(userInput == 3) debts = dManager.getDebts("ACCRUAL");
@@ -109,7 +109,7 @@ public class TextUserInterface {
         userInput = getInteger();
         if(userInput != 0) {
             for(Debt d : debts) {
-                if(d.eventNumber != userInput) debts.remove(d);
+                if(d.getEventNumber() != userInput) debts.remove(d);
             }
         }
 

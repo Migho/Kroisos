@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class SQLManager {
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/bookkeeping_TKOaly";
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://localhost/bookkeeping_TKOaly";
 
-    static final String USER = "local";
-    static final String PASS = "1234";  //:-)
-    static Statement stmt = null;
-    static Connection conn = null;
+    private static final String USER = "local";
+    private static final String PASS = "1234";  //:-)
+    private static Statement stmt = null;
+    private static Connection conn = null;
 
     public static ResultSet runSQLQuery(String statement, Object[] parameters) {
         try {
@@ -71,11 +71,7 @@ public class SQLManager {
         try{
             if(stmt != null) stmt.close();
             if(conn != null) conn.close();
-        }catch(SQLException se){
-            //Handle errors for JDBC
-            se.printStackTrace();
-        }catch(Exception e){
-            //Handle errors for Class.forName
+        } catch(Exception e){
             e.printStackTrace();
         }finally{
             //finally block used to close resources

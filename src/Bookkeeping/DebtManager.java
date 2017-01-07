@@ -57,9 +57,9 @@ public class DebtManager {
     }
 
     public static int addDebt(Debt d) {
-        int result = SQLManager.runSQLUpdate("INSERT INTO Debt (reference_number, event, name, mail, sum, status, info)" +
-                        "VALUES ?, ?, ?, ?, ?, ?, ?",
-                new Object[] {d.getReferenceNumber(), d.eventNumber, d.name, d.mail, d.sum, "NOT_SENT", d.externalInfo});
+        int result = SQLManager.runSQLUpdate("INSERT INTO Debt (reference_number, event, name, mail, sum, status, info) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                new Object[] {d.getReferenceNumber(), d.getEventNumber(), d.getName(), d.getMail(), d.getSum(), "NOT_SENT", d.getInfo()});
         if(result != 1) System.out.println("Update affected " + result + " rows.");
         return 0;
     }
@@ -71,14 +71,12 @@ public class DebtManager {
         }
         ReferenceNumberGenerator rGen = new ReferenceNumberGenerator(eventNumber);
         for(int i=0; i<eMails.length && i<names.length; i++) {
-            Debt debt = new Debt();
-            debt.eventNumber = rGen.getEventNumber();
-            debt.participantNumber = rGen.getParticipantNumber();
-            debt.checkDigit = rGen.getCheckDigit();
-            debt.sum = sum;
-            debt.mail = eMails[i];
-            debt.name = names[i];
-            addDebt(debt);
+            Debt d = new Debt();
+            d.setReferenceNumber(rGen.getReferenceNumber());
+            d.setSum(sum);
+            d.setMail(eMails[i]);
+            d.setName(names[i]);
+            addDebt(d);
             rGen.nextReferenceNumber();
         }
         return 0;
@@ -127,20 +125,20 @@ public class DebtManager {
     }
 
     private static Debt fetchDebt(ResultSet rs) {
-        Debt debt = new Debt();
+        Debt d = new Debt();
         try {
             int referenceNumber = rs.getInt("reference_number");
-            debt.setReferenceNumber(referenceNumber);
-            debt.name = rs.getString("name");
-            debt.mail = rs.getString("mail");
-            debt.eventNumber = rs.getInt("event");
-            debt.sum = rs.getDouble("sum");
-            debt.info = rs.getString("info");
-            debt.dueDate = rs.getDate("due_date");
+            d.setReferenceNumber(referenceNumber);
+            d.setName(rs.getString("name"));
+            d.setMail(rs.getString("mail"));
+            d.setEventNumber(rs.getInt("event"));
+            d.setSum(rs.getDouble("sum"));
+            d.setInfo(rs.getString("info"));
+            d.setDueDate(rs.getDate("due_date"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return debt;
+        return d;
     }
 
 }

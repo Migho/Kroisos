@@ -38,7 +38,7 @@ public class BankStatementParser {
                 case TRANSACTION:
                     //System.out.println(line + "     TRANSACTIONLINE");
                     Transaction transaction = parseTransactionLine(line);
-                    transaction.date = date;
+                    transaction.setDate(date);
                     if(scanner.hasNextLine()) line = scanner.nextLine();   //skip line "TILISIIRTO"
                     //System.out.println(line + "     SKIPPED");
                     if(line.length()>4 && line.substring(5).equals("KORTTIOSTO")) {
@@ -105,13 +105,13 @@ public class BankStatementParser {
         line = line.substring(18);
         if(line.substring(0, 3).equals(" A ")) line = line.substring(3);
         line = line.substring(5);
-        Transaction transaction = new Transaction();
-        transaction.number = Integer.parseInt(line.substring( line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")+1, line.lastIndexOf(" ") ));
-        transaction.name = line.substring(0, line.lastIndexOf(" ")).substring(0, line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" "));
-        while(transaction.name.startsWith(" ")) transaction.name = transaction.name.substring(1);
+        Transaction t = new Transaction();
+        t.setNumber(Integer.parseInt(line.substring( line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")+1, line.lastIndexOf(" ") )));
+        t.setName(line.substring(0, line.lastIndexOf(" ")).substring(0, line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")));
+        t.setName(t.getName().trim());
         String s = line.substring(line.lastIndexOf(" ")+1);
-        transaction.setSum(s.substring(0, s.length()-3).replace(".", "") + s.substring(s.length()-3));
-        return transaction;
+        t.setSum(s.substring(0, s.length()-3).replace(".", "") + s.substring(s.length()-3));
+        return t;
     }
 
 }

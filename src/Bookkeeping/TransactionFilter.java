@@ -19,30 +19,32 @@ public class TransactionFilter {
     }
 
     public ArrayList<Transaction> filterTransactions(ArrayList<Transaction> list) {
-        for(int i=0; i<list.size(); i++) {
-            Transaction transaction = list.get(i);
+        for(Transaction t : list) {
+            Transaction transaction = t;
             if(transaction.getReferenceNumber() >= 0 && transaction.getSum() >= 0) {
                 if(transaction.getReferenceNumber() > 1000000 && transaction.getReferenceNumber() < 10000000) {
                     //Jäsenmaksu
-                    list.get(i).type = "Jäsenmaksut";
+                    t.setType("Jäsenmaksut");
                 } else if(transaction.getReferenceNumber() >= 10000000) {
                     //Tapahtumamaksu
-                    Debt temp = dManager.getDebt(list.get(i).getReferenceNumber());
-                    if(temp != null) list.get(i).name = temp.name.toUpperCase();
-                    if(dManager.markDebtPaid(transaction.getReferenceNumber(), transaction.getSum())==0)
-                        System.out.println("No debt found");
-                    list.get(i).type = eManager.getType((int)transaction.getReferenceNumber()/10000);
+                    Debt temp = dManager.getDebt(t.getReferenceNumber());
+                    if(temp != null) t.setName(temp.getName().toUpperCase());
+                    if(dManager.markDebtPaid(transaction.getReferenceNumber(), transaction.getSum())==0) {
+                        //if no payment is found with this reference number, don't do anything.
+                    }
+                    t.setType(eManager.getType((int)transaction.getReferenceNumber()/10000));
                     String eventDescription = eManager.getEventDescription((int)transaction.getReferenceNumber()/10000);
-                    if(!eventDescription.isEmpty()) list.get(i).setMessage(eventDescription);
+                    if(!eventDescription.isEmpty()) t.setMessage(eventDescription);
                 }
-            } if(transaction.type.equals("Undefined")) {
-                list.get(i).type = askType(list.get(i).toString());
+            } if(transaction.getType().equals("Undefined")) {
+                //Tällä hetkellä luokka kysyy komentorivillä erikseen mikä maksu kyseessä on.
+                t.setType(askType(t.toString()));
             }
 
-            if(list.get(i).type.equals("Jäsenmaksut")) {
-                if(list.get(i).getSum() > 3.995 && list.get(i).getSum() < 4.005) list.get(i).setMessage("Jäsenmaksu 1 vuosi");
-                else if(list.get(i).getSum() > 9.995 && list.get(i).getSum() < 10.005) list.get(i).setMessage("Jäsenmaksu 3 vuotta");
-                else if(list.get(i).getSum() > 14.995 && list.get(i).getSum() < 15.005) list.get(i).setMessage("Jäsenmaksu 5 vuotta");
+            if(t.getType().equals("Jäsenmaksut")) {
+                if(t.getSum() > 3.995 && t.getSum() < 4.005) t.setMessage("Jäsenmaksu 1 vuosi");
+                else if(t.getSum() > 9.995 && t.getSum() < 10.005) t.setMessage("Jäsenmaksu 3 vuotta");
+                else if(t.getSum() > 14.995 && t.getSum() < 15.005) t.setMessage("Jäsenmaksu 5 vuotta");
             }
         }
 

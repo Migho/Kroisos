@@ -36,23 +36,23 @@ public class ExcelWriter {
         XSSFSheet sheet = workbook.createSheet("TKO-äly");
 
         int rownum = 0;
-        for(int i=0; i<list.size(); i++) {
+        for (Transaction t : list) {
             Row row = sheet.createRow(rownum++);
             Cell cell = row.createCell(1);
-            cell.setCellValue((String) list.get(i).date);
+            cell.setCellValue((String) t.getDate());
             cell = row.createCell(2);
-            cell.setCellValue((String) list.get(i).getMessage() + " " + list.get(i).name.toUpperCase());
-            if(list.get(i).getSum() > 0) {
+            cell.setCellValue((String) t.getMessage() + " " + t.getName().toUpperCase());
+            if(t.getSum() > 0) {
                 cell = row.createCell(11);
-                cell.setCellValue(Math.abs(list.get(i).getSum()));
+                cell.setCellValue(Math.abs(t.getSum()));
             } else {
                 cell = row.createCell(12);
-                cell.setCellValue(Math.abs(list.get(i).getSum()));
+                cell.setCellValue(Math.abs(t.getSum()));
             }
-            int a = getCell(list.get(i).type, list.get(i).getSum());
+            int a = getCell(t.getType(), t.getSum());
             if(a>0) {
                 cell = row.createCell(a);
-                cell.setCellValue(Math.abs(list.get(i).getSum()));
+                cell.setCellValue(Math.abs(t.getSum()));
             }
         }
 
@@ -60,7 +60,7 @@ public class ExcelWriter {
             FileOutputStream out = new FileOutputStream(new File(fileName));
             workbook.write(out);
             out.close();
-            System.out.println("Excel written successfully..");
+            //System.out.println("Excel written successfully..");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -79,7 +79,7 @@ public class ExcelWriter {
                 if(sum < 0) return rs.getInt("excel_column-");
                 if(sum >= 0) return rs.getInt("excel_column+");
             } else {
-                System.out.println("No such event");
+                //System.out.println("No such event");
             }
         } catch (SQLException e) {
             e.printStackTrace();

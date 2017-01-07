@@ -6,12 +6,40 @@ package Tools;
  */
 public class Transaction {
 
-    public int number;
-    public String date = null;
-    public String name = null;
+    private int number;
+    private String date = null;
+    private String name = null;
     private double sum = 0;
     private String message = null;
-    public String type = "Undefined";
+    private String type = "Undefined";
+
+    public int getNumber() {
+        return number;
+    }
+    public String getDate() {
+        return date;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getType() {
+        return type;
+    }
+    public void setNumber(int number) {
+        this.number = number;
+    }
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setSum(double sum) {
+        this.sum = sum;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @Override
     public String toString() {
@@ -39,9 +67,7 @@ public class Transaction {
     private boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
-        } catch(NumberFormatException e) {
-            return false;
-        } catch(NullPointerException e) {
+        } catch(Exception e) {
             return false;
         }
         return true;

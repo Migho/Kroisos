@@ -14,11 +14,11 @@ import java.util.*;
 
 public class MessageCreator {
 
-    TextFileReader tReader;
-    SQLManager sqlManager;
-    int expDays = 14;
-    SessionStarter sStarter;
-    EventManager eManager = new EventManager();
+    private TextFileReader tReader;
+    private SQLManager sqlManager;
+    private int expDays = 14;
+    private SessionStarter sStarter;
+    private EventManager eManager = new EventManager();
     
     
     public MessageCreator(String file) throws java.io.FileNotFoundException {
@@ -71,10 +71,10 @@ public class MessageCreator {
 
     /**
      * This method will take care of forming and sending one message, created from the debt.
-     * @param debt Debt used for the information in the mail
+     * @param d Debt used for the information in the mail
      * @return 0 if successful, < 0 if failed.
      */
-    private int formAndSendMail(Debt debt) {
+    private int formAndSendMail(Debt d) {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
@@ -83,34 +83,34 @@ public class MessageCreator {
 
         //replace this information from text
         HashMap<String, String> changeList = new HashMap<>();
-        changeList.put("§REFERENCENUMBER§", Integer.toString(debt.getReferenceNumber()));
-        changeList.put("§NAME§", debt.name);
-        changeList.put("§SUM§", String.format("%.2f", debt.sum));
-        changeList.put("§EVENTNAME§", eManager.getEventName(debt.eventNumber));
-        changeList.put("§EVENTDESC§", eManager.getEventDescription(debt.eventNumber));
-        changeList.put("§INFO§", debt.info);
+        changeList.put("§REFERENCENUMBER§", Integer.toString(d.getReferenceNumber()));
+        changeList.put("§NAME§", d.getName());
+        changeList.put("§SUM§", String.format("%.2f", d.getSum()));
+        changeList.put("§EVENTNAME§", eManager.getEventName(d.getEventNumber()));
+        changeList.put("§EVENTDESC§", eManager.getEventDescription(d.getEventNumber()));
+        changeList.put("§INFO§", d.getInfo());
         SimpleDateFormat daySdf = new SimpleDateFormat("dd.MM.YYYY");
         Calendar c = Calendar.getInstance();
-        if(debt.dueDate == null) {  //if debt has no due date, it will be set.
+        if(d.getDueDate() == null) {  //if debt has no due date, it will be set.
             c.setTime(new Date());
             c.add(Calendar.DATE, expDays);
-        } else c.setTime(debt.dueDate);
+        } else c.setTime(d.getDueDate());
         changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
 
         //starting message sending at this point
-        System.out.println("Sending message to " + debt.mail + "... ");
+        System.out.println("Sending message to " + d.getMail() + "... ");
         String message = tReader.textAdapter(changeList);
         String title = tReader.getTitle(changeList);
-        int messageResult = sStarter.sendMessage(debt.mail, title, message);
+        int messageResult = sStarter.sendMessage(d.getMail(), title, message);
         if (messageResult == 0) {
             System.out.println("Message sent successfully");
-            sqlManager.runSQLUpdate("UPDATE Debt SET due_date=?, last_mail_sent=? WHERE reference_number=?", new Object[] {c.getTime(), new Date(), debt.getReferenceNumber()});
+            sqlManager.runSQLUpdate("UPDATE Debt SET due_date=?, last_mail_sent=? WHERE reference_number=?", new Object[] {c.getTime(), new Date(), d.getReferenceNumber()});
             //update due date and
         } else {
             System.out.println("Couldn't send message. Error code: " + messageResult);
             return -1;
         }
-        messageSaver(debt.name, debt.mail, debt.getReferenceNumber(), debt.eventNumber, title, message, messageResult);
+        messageSaver(d.getName(), d.getMail(), d.getReferenceNumber(), d.getEventNumber(), title, message, messageResult);
         return 0;
     }
 

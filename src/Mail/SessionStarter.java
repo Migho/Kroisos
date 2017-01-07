@@ -3,7 +3,7 @@ package Mail;
 import java.io.Console;
 import java.util.Scanner;
 
-public class SessionStarter {
+class SessionStarter {
     private Sender sender = new Sender();
     private Scanner s = new Scanner(System.in);
     private int previewToggle;
@@ -14,7 +14,7 @@ public class SessionStarter {
     public SessionStarter(int previewToggle) {
         this.previewToggle = previewToggle;
     }
-    public SessionStarter() { this(0); };
+    public SessionStarter() { this(0); }
 
     private static Console consoleLoader() {
         Console console = System.console();
@@ -36,7 +36,7 @@ public class SessionStarter {
      * -10 = null console, -11 = double null session, -12 = user aborted sending.
      */
     public int sendMessage(String toAddress, String subject, String message) {
-        if(previewToggle!=0) if(preview(toAddress, subject, message) == false) return -12;
+        if(previewToggle!=0) if(!preview(toAddress, subject, message)) return -12;
         if(previewToggle==1) previewToggle = 0;
         int a = sender.sendEmail(toAddress, subject, message);
         if(a==-1) {

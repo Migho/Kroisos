@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class TextFileReader {
+class TextFileReader {
 
     private String text;
     private String title = "";
@@ -22,7 +22,7 @@ public class TextFileReader {
         File file = new File(filePath);
         try {
             Scanner scanner = new Scanner(file);
-            text = new String();
+            String text = "";
             if(scanner.hasNextLine()) title = scanner.nextLine();   //First line = title of the mail
             while (scanner.hasNextLine()) text = text + scanner.nextLine() + "\r\n";
             scanner.close();
