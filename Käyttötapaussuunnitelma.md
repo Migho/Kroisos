@@ -1,7 +1,7 @@
 # KÄYTTÖTAPAUSSUUNNITELMA
 
 ## Käyttäjät
-Ohjelmallä on kolme käyttäjää:
+Ohjelmassa on seuraavat käyttäjät:
   * "Normaali käyttäjä"
   * Laskutuskäyttäjä
   * Toiminnantarkastaja
