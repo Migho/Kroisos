@@ -9,7 +9,7 @@ Ohjelmassa on seuraavat käyttäjät:
   
 *Normaali käyttäjä* voi luoda kulukorvauksia omissa nimissään, muokata niiden tietoja (ennen kuin ne on hyväksytty) sekä tarkastella omia maksujaan (sekä maksamattomia että maksettujen historiaa). Lisäksi käyttäjä voi luoda budjetteja, joita kokouksessa hyväksymisen jälkeen rahastonhoitaja hyödyntää toteumissa. Jos jäsenmaksua ei ole maksettu, järjestelmä antaa käyttäjälle maksuohjeet jäsenmaksua varten muttei anna tehdä kulukorvauksia.
 
-*Laskutuskäyttäjilä* on oikeus luoda lisäksi laskuja. Tämä on lähinnä yritysvastaaville tarkoitettu ominaisuus.
+*Laskutuskäyttäjillä* on oikeus luoda lisäksi laskuja. Tämä on lähinnä yritysvastaaville tarkoitettu ominaisuus.
 
 *Toiminnantarkastaja* on käyttäjä, jolla on oikeus tarkastella kaikkea vuoden tietoa sen jälkeen kun rahastonhoitaja on koonnut tilinpäätöksen. Toiminnantarkastaja ei voi suoranaisesti voi muokata kirjanpitoa, mutta voi kirjoittaa kommentteja ja huomautuksia tositteisiin ja lopulta katsoa kirjanpidon hyväksytyksi.
 
@@ -28,7 +28,7 @@ Kulukorvauksia on kahdenlaisia:
 Rahastonhoitaja tapauskohtaisesti voi luoda vielä hyväksymättömistä luoduista kulukorvauksista dokumentin, jota käytetään esimerkiksi budjetoimattomien kulukorvausten hyväksymiseen.
 
 ## Maksut eli muiden velat järjestölle
-Kroisoksen ensisijainen idea oli tehdä maksujen ylläpidosta järjestelmällistä ja automaattista. Järjestelmän on tarkoitus repiä automaattisesti members-sivulta tietyn tapahtuman osallistujat ja heidän ilmoittamat osallistumistiedot ja luoda niistä maksut käyttäjille. Rahastonhoitaja voi muokata haluamansa mukaan maksuja ja lähettää valitsemistaan maksuista maksuohjeita tai maksumuistutuksia. Järjestelmä lisää hallituksen määrittelemän maksumuistutusmäärän jälkeen kiinteän muistutusmaksun. Maksut itsessään sisältävät summan, tapahtumaID (kuten jäsenmaksu, vuosijuhlamaksu 2016, fuksisitsimaksu 2016 jne) sekä viitenumeron, josta viimeinen numero on tarkistusnumero, kolme seuraavaavaa on leksikografisessa järjestyksessä kasvava osallistujanumero ja loput numerot ovat tapahtumaID-numeroa.
+Kroisoksen ensisijainen idea oli tehdä maksujen ylläpidosta järjestelmällistä ja automaattista. Järjestelmän on tarkoitus repiä automaattisesti members-sivulta tietyn tapahtuman osallistujat ja heidän ilmoittamat osallistumistiedot ja luoda niistä maksut käyttäjille. Rahastonhoitaja voi muokata haluamansa mukaan maksuja ja lähettää valitsemistaan maksuista maksuohjeita tai maksumuistutuksia. Järjestelmä lisää hallituksen määrittelemän maksumuistutusmäärän jälkeen kiinteän muistutusmaksun. Maksut itsessään sisältävät summan, tapahtumaID (kuten jäsenmaksu, vuosijuhlamaksu 2016, fuksisitsimaksu 2016 jne) sekä viitenumeron, josta viimeinen numero on tarkistusnumero, kolme seuraavaavaa on järjestyksessä kasvava osallistujanumero ja loput numerot ovat tapahtumaID-numeroa.
 
 Normaalit käyttäjät voivat puolestaan tarkastella omia maksuhistorioitaan ja vielä maksamattomia maksuja.
 
