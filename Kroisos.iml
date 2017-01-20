@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+<<<<<<< HEAD
   <component name="FacetManager">
     <facet type="web" name="Web">
       <configuration>
@@ -12,6 +13,8 @@
       </configuration>
     </facet>
   </component>
+=======
+>>>>>>> ec38dc1cc4dde909f971ad635f548a84db2481b6
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -19,11 +22,24 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
     <orderEntry type="library" scope="PROVIDED" name="GlassFish 4.1.1" level="application_server_libraries" />
     <orderEntry type="library" scope="PROVIDED" name="Vaadin Client" level="project" />
     <orderEntry type="library" name="Vaadin Server" level="project" />
     <orderEntry type="library" name="pdfbox-app-2.0.4" level="project" />
     <orderEntry type="library" name="javax.mail" level="project" />
     <orderEntry type="library" name="postgresql-9.4-1201.jdbc4" level="project" />
+=======
+    <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
+    <orderEntry type="library" name="javax.mail" level="project" />
+    <orderEntry type="library" name="poi-ooxml-3.11" level="project" />
+    <orderEntry type="library" name="xmlbeans-2.3.0" level="project" />
+    <orderEntry type="library" name="commons-codec-1.9" level="project" />
+    <orderEntry type="library" name="poi-3.11" level="project" />
+    <orderEntry type="library" name="poi-ooxml-schemas-3.11" level="project" />
+    <orderEntry type="library" name="stax-api-1.0.1" level="project" />
+    <orderEntry type="library" name="pdfbox-app-2.0.2" level="project" />
+    <orderEntry type="library" exported="" name="mysql-connector-java-5.1.35-bin" level="project" />
+>>>>>>> ec38dc1cc4dde909f971ad635f548a84db2481b6
   </component>
 </module>
