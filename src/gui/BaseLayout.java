@@ -20,6 +20,8 @@ public class BaseLayout extends HorizontalSplitPanel {
 
     private void initComponents(){
         setFirstComponent(sideBar());
+        //setSecondComponent(new DebtView());
+        setSecondComponent(new SendMailsView());
     }
 
     private VerticalLayout sideBar() {

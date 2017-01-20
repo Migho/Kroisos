@@ -6,8 +6,8 @@ class SQLconnector {
     private static final String JDBC_DRIVER = "org.postgresql.Driver";
     private static final String DB_URL = "jdbc:postgresql://localhost/kroisos";
 
-    private static final String USER = System.getenv("PSQL_USER");
-    private static final String PASS = System.getenv("PSQL_PASS");
+    private static final String USER = "migho";
+    private static final String PASS = "12345678";  //:-)
     private static Statement stmt = null;
     private static Connection conn = null;
 
