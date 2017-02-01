@@ -1,4 +1,4 @@
-package gui.Views;
+package gui.pages;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Grid;
@@ -6,18 +6,14 @@ import com.vaadin.ui.VerticalLayout;
 import models.Debt;
 import services.DebtService;
 
-public class DebtView extends VerticalLayout {
+public class DebtsPage extends VerticalLayout {
 
     private Grid debtList = new Grid();
 
-    public DebtView() {
-        initRoot();
+    public DebtsPage() {
         initComponents();
     }
 
-    private void initRoot(){
-        setStyleName("vertical-menu");
-    }
 
     private void initComponents(){
         addComponents(debtList);
