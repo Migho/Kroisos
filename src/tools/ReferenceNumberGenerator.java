@@ -48,7 +48,7 @@ public class ReferenceNumberGenerator {
     }
 
     private void generateCheckDigit() {
-        checkDigit = 9 - (7*eventNumber/1000 +
+        checkDigit = 9 - (7*(eventNumber/1000) +
                 1*(eventNumber/100-(eventNumber/1000)*10) +
                 3*(eventNumber/10 - (eventNumber/100-(eventNumber/1000)*10)*10 - (eventNumber/1000)*100) +
                 7*(eventNumber-(eventNumber/10)*10) +

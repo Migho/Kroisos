@@ -12,7 +12,21 @@ public class DebtService {
 
     public static List<Debt> getDebts() {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN users u ON d.userid = u.id");
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id");
+        try {
+            while(rs.next()) {
+                list.add(fetchDebt(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static List<Debt> getDebts(int eventNumber) {
+        List<Debt> list = new ArrayList<>();
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id " +
+                "WHERE eventid=?", eventNumber);
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -25,7 +39,7 @@ public class DebtService {
 
     public static Debt getDebt(long referenceNumber) {
         Debt debt = new Debt();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM Debt WHERE reference_number=?", referenceNumber);
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE reference_number=?", referenceNumber);
         try {
             if(rs.next()) {
                 debt = fetchDebt(rs);
@@ -38,9 +52,9 @@ public class DebtService {
 
 
     public static int addDebt(Debt d) {
-        int result = SQLconnector.runSQLUpdate("INSERT INTO Debt (reference_number, eventid, userid, sum, status, info) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                new Object[] {d.getReferenceNumber(), d.getEventId(), 1, d.getSum(), 0, d.getInfo()});
+        int result = SQLconnector.runSQLUpdate("INSERT INTO debt (reference_number, eventid, userid, sum, info) " +
+                        "VALUES (?, ?, ?, ?, ?)",
+                new Object[] {d.getReferenceNumber(), d.getEventId(), d.getUser().getId(), d.getSum(), d.getInfo()});
         if(result != 1) ; //do some shit
         return 0;
     }
@@ -52,13 +66,14 @@ public class DebtService {
         return 0;
     }
 
-    public static int CreateEventDebts(User[] users, int eventId, int sum) {
+    public static int createEventDebts(ArrayList<User> users, int eventId, int sum) {
         ReferenceNumberGenerator rGen = new ReferenceNumberGenerator(eventId);
         for(User u : users) {
             Debt d = new Debt();
             d.setReferenceNumber(rGen.getReferenceNumber());
             d.setEventId(eventId);
             d.setSum(sum);
+            //USERID VOI OLLA MÄÄRITTELEMÄTTÄ!! Korjaa sitten kun members ja kroisos yhdistyy.
             d.setUser(u);
             addDebt(d);
             rGen.nextReferenceNumber();
@@ -113,14 +128,16 @@ public class DebtService {
         Debt d = new Debt();
         try {
             int referenceNumber = rs.getInt("reference_number");
+            d.setId(rs.getInt("id"));
             d.setReferenceNumber(referenceNumber);
             d.setEventId(rs.getInt("eventid"));
             d.setSum(rs.getInt("sum"));
             d.setInfo(rs.getString("info"));
             d.setDueDate(rs.getDate("due_date"));
+            d.setStatus(rs.getString("status"));
             //koska molemmissa tauluissa on saman niminen sarake (ID) niin pitää hakea sitä sarakkeen numeron perusteella.
-            if(rs.getInt(12) != 0)
-                d.setUser(new User(rs.getInt(12), rs.getString("username"), rs.getString("name"), rs.getString("mail")));
+            //TODO korjaa sarakeongelma
+            d.setUser(new User(rs.getInt(12), rs.getString("username"), rs.getString("name"), rs.getString("mail")));
         } catch (SQLException e) {
             e.printStackTrace();
         }

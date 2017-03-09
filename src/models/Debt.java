@@ -11,7 +11,7 @@ public class Debt implements Comparable<Debt> {
     private int sum = 0;
     private String info = "";
     private Date dueDate;
-    private int status;
+    private String status;
     private Date lastMailSent;
     private int penalty;
 
@@ -55,7 +55,7 @@ public class Debt implements Comparable<Debt> {
     public Date getDueDate() {
         return dueDate;
     }
-    public int getStatus() { return status; }
+    public String getStatus() { return status; }
     public void setEventId(int eventId) {
         this.eventId = eventId;
     }
@@ -77,7 +77,7 @@ public class Debt implements Comparable<Debt> {
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
-    public void setStatus(int status) { this.status = status; }
+    public void setStatus(String status) { this.status = status; }
 
     public int getReferenceNumber() {
         return eventId *10000 + participantNumber*10 + checkDigit;
@@ -98,7 +98,7 @@ public class Debt implements Comparable<Debt> {
         return this.setReferenceNumber(eventNumber, participantNumber, checkDigit);
     }
 
-    //some for Vaadin
+    //for Vaadin
     public String getUserName() {
         if(user != null) return user.getUsername();
         return null;

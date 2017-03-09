@@ -16,7 +16,7 @@ public class EventService {
 
     //delete this shit
     public static String getType(int eventNumber) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT Account.name FROM Event INNER JOIN Account WHERE event_number=? AND Event.account = Account.id;", new Object[] {eventNumber});
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT Account.name FROM event INNER JOIN Account WHERE event_number=? AND Event.account = Account.id;", new Object[] {eventNumber});
         if(rs != null) {
             try {
                 if (rs.next()) {
@@ -30,7 +30,7 @@ public class EventService {
     }
 
     private static String getStringField(int eventNumber, String columnName) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM Event WHERE event_number=?;", new Object[] {eventNumber});
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
         if(rs != null) {
             try {
                 if (rs.next()) {

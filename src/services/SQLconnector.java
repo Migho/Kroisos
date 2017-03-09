@@ -1,13 +1,16 @@
 package services;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.sql.*;
 
 class SQLconnector {
-    private static final String JDBC_DRIVER = "org.postgresql.Driver";
-    private static final String DB_URL = "jdbc:postgresql://localhost/kroisos";
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/kroisos";
 
-    private static final String USER = "migho";
-    private static final String PASS = "12345678";  //:-)
+    private static final String USER = "kroisos";
+    private static final String PASS = "1234";  //:-)
     private static Statement stmt = null;
     private static Connection conn = null;
 
@@ -56,7 +59,7 @@ class SQLconnector {
             //STEP 4: Execute a query
             stmt = conn.createStatement();
         } catch (Exception e) {
-            //Handle errors for Class.forName
+            System.out.println(e);
             e.printStackTrace();
             return -1;
         }
