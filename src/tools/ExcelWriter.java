@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+//Niinkuin hienosti näkyy, vanhaa koodia jota käytettiin silloin kun koko kirjanpito oli excel-tiedostossa.
+//Jätetty toistaiseksi, poistetaan syssymmällä.
 public class ExcelWriter {
 
     /**
@@ -41,7 +43,7 @@ public class ExcelWriter {
             Cell cell = row.createCell(1);
             cell.setCellValue((String) t.getDate());
             cell = row.createCell(2);
-            cell.setCellValue((String) t.getMessage() + " " + t.getName().toUpperCase());
+            cell.setCellValue((String) t.getMessage() + " " + t.getPayer().toUpperCase());
             if(t.getSum() > 0) {
                 cell = row.createCell(11);
                 cell.setCellValue(Math.abs(t.getSum()));

@@ -71,7 +71,7 @@ public class LoginView extends CustomComponent implements View, Button.ClickList
             //Store the current user in the service session
             getSession().setAttribute("user", username);
             getSession().setAttribute("role", LoginService.getRole(username));
-            getUI().getNavigator().navigateTo(MainView.NAME);//
+            getUI().getNavigator().navigateTo(MainView.NAME);
 
         } else {this.password.setValue(null);
             this.password.focus();

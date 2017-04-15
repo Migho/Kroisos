@@ -7,26 +7,31 @@ import java.sql.SQLException;
 public class EventService {
 
     public static String getEventDescription(int eventNumber) {
-        return getStringField(eventNumber, "description");
+        return (String)getStringField(eventNumber, "description");
     }
 
     public static String getEventName(int eventNumber) {
-        return getStringField(eventNumber, "name");
+        return (String)getStringField(eventNumber, "name");
     }
 
-    //delete this shit
-    public static String getType(int eventNumber) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT Account.name FROM event INNER JOIN Account WHERE event_number=? AND Event.account = Account.id;", new Object[] {eventNumber});
+    public static int getAccountId(int eventNumber) {
+        return getIntField(eventNumber, "accountid");
+    }
+
+    private static Integer getIntField(int eventNumber, String columnName) {
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
         if(rs != null) {
             try {
                 if (rs.next()) {
-                    return rs.getString("Account.name");
+                    return rs.getInt(columnName);
+                } else {
+                    System.out.println("No such event as " + eventNumber);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-        return "Undefined";
+        return 0;
     }
 
     private static String getStringField(int eventNumber, String columnName) {
@@ -36,7 +41,7 @@ public class EventService {
                 if (rs.next()) {
                     return rs.getString(columnName);
                 } else {
-                    System.out.println("No such event");
+                    System.out.println("No such event as " + eventNumber);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

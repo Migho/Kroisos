@@ -5,6 +5,7 @@ import java.util.Date;
 public class Debt implements Comparable<Debt> {
     private int id;
     private int eventId = 0;
+    private int fakeEventId = 0; //fast fix; sometimes event number can start with something else than eventId.
     private int participantNumber = 0;
     private int checkDigit = 0;
     private User user;
@@ -56,8 +57,7 @@ public class Debt implements Comparable<Debt> {
         return dueDate;
     }
     public String getStatus() { return status; }
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setEventId(int eventId) {this.eventId = eventId;
     }
     public void setParticipantNumber(int participantNumber) {
         this.participantNumber = participantNumber;
@@ -80,12 +80,14 @@ public class Debt implements Comparable<Debt> {
     public void setStatus(String status) { this.status = status; }
 
     public int getReferenceNumber() {
-        return eventId *10000 + participantNumber*10 + checkDigit;
+        if(fakeEventId == 0) return eventId *10000 + participantNumber*10 + checkDigit;
+        return fakeEventId *10000 + participantNumber*10 + checkDigit;
     }
 
     public int setReferenceNumber(int eventNumber, int participantNumber, int checkDigit) {
         if(eventNumber > 9999 || participantNumber > 999 || checkDigit > 9) return -1;
-        this.eventId = eventNumber;
+        if(eventId == 0) this.eventId = eventNumber;
+        else fakeEventId = eventNumber;
         this.participantNumber = participantNumber;
         this.checkDigit = checkDigit;
         return 0;

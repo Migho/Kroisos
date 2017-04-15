@@ -9,7 +9,13 @@ public class UserService {
 
     public static User getUser(int userId) {
         ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM user WHERE id=?", userId);
-        return fetchUser(rs);
+        try {
+            rs.next();
+            return fetchUser(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static User addUser(User u) {

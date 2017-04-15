@@ -9,11 +9,15 @@ import com.vaadin.ui.*;
 @Theme("chameleon")
 public class VaadinUI extends UI {
 
+
     @Override
     protected void init(VaadinRequest request) {
 
-        new Navigator(this, this);
+        getPage().setTitle("Kroisos");
 
+        //navigator creation
+        new Navigator(this, this);
+        getNavigator().addView("", LoginView.class);
         getNavigator().addView(LoginView.NAME, LoginView.class);
         getNavigator().addView(MainView.NAME, MainView.class);
 

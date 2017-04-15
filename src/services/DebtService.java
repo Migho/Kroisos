@@ -12,7 +12,8 @@ public class DebtService {
 
     public static List<Debt> getDebts() {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id");
+        //ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id");
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d");
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -25,8 +26,8 @@ public class DebtService {
 
     public static List<Debt> getDebts(int eventNumber) {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id " +
-                "WHERE eventid=?", eventNumber);
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id WHERE eventid=?", eventNumber);
+        //ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d WHERE eventid=?", eventNumber);
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -88,7 +89,7 @@ public class DebtService {
     }
     public List<Debt> getAllEventDebts(int eventNumber) {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM Debt WHERE event=?;", eventNumber);
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE event=?;", eventNumber);
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -99,45 +100,48 @@ public class DebtService {
         return list;
     }
 
-    public static int markDebtPaid(long referenceNumber, double sum) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM Debt WHERE reference_number=?;", referenceNumber);
+    public static int markDebtPaid(long referenceNumber, int sum) {
+        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE reference_number=?;", referenceNumber);
         try {
             if(rs.next()) {
                 String status = rs.getString("status");
-                if(!status.equals("PENDING") && !status.equals("LATE") && !status.equals("ACCRUAL")) {
-                    System.out.println("Requested to update " + status + " to PAID");
-                    System.out.println("Status is not updated.");
-                    return -1;
+                if(status.equals("PENDING") || status.equals("LATE") || status.equals("ACCRUAL")) {
+                    return SQLconnector.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "PAID", referenceNumber);
                 }
-                double debtSum = rs.getDouble("sum");
-                if(debtSum > sum+0.005 || debtSum < sum-0.005) {
-                    System.out.println("Requested to update cell with wrong amount");
-                    System.out.println("Status is updated to AMOUNT_ERR.");
-                    return SQLconnector.runSQLUpdate("UPDATE Debt SET status=? WHERE reference_number=?;", "AMOUNT_ERR", referenceNumber);
-                }
-            } else {
-                return 0;
+                return SQLconnector.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "AMOUNT_ERR", referenceNumber);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return SQLconnector.runSQLUpdate("UPDATE Debt SET status=? WHERE reference_number=?;", "PAID", referenceNumber);
+        return -1;
+    }
+
+    public static int updateLateStatuses() {
+        List<Debt> dList = getDebts();
+        int result = 0;
+        for(Debt d : dList) {
+            if(d.getStatus().equals("PENDING")) {
+                if((int) ((d.getDueDate().getTime() - new java.util.Date().getTime()) / (1000 * 60 * 60 * 24)) < -7) {
+                    d.setStatus("LATE");
+                    updateDebt(d);
+                    result++;
+                }
+            }
+        }
+        return result;
     }
 
     private static Debt fetchDebt(ResultSet rs) {
         Debt d = new Debt();
         try {
-            int referenceNumber = rs.getInt("reference_number");
             d.setId(rs.getInt("id"));
-            d.setReferenceNumber(referenceNumber);
             d.setEventId(rs.getInt("eventid"));
+            d.setReferenceNumber(rs.getInt("reference_number"));
             d.setSum(rs.getInt("sum"));
             d.setInfo(rs.getString("info"));
             d.setDueDate(rs.getDate("due_date"));
             d.setStatus(rs.getString("status"));
-            //koska molemmissa tauluissa on saman niminen sarake (ID) niin pitää hakea sitä sarakkeen numeron perusteella.
-            //TODO korjaa sarakeongelma
-            d.setUser(new User(rs.getInt(12), rs.getString("username"), rs.getString("name"), rs.getString("mail")));
+            d.setUser(UserService.getUser(rs.getInt("userid")));
         } catch (SQLException e) {
             e.printStackTrace();
         }

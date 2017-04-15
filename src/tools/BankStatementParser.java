@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import models.Transaction;
 
-//harvinaisen paskaa koodia, pitäisi varmaan koko roska koodata uudestaan. Toimii kohtalaisesti.
-public class BankStatementParser {
+//harvinaisen paskaa koodia, pitäis koko roska koodata uudestaan. Toimii kuitenni ihan kohtalaisesti.
+class BankStatementParser {
 
     private enum lineType {
         DAYCHANGE, TRANSACTION, ARCHIVE_NUMBER, IBAN_INFORMATION, PAGECHANGE, UNKNOWN
@@ -18,6 +18,8 @@ public class BankStatementParser {
     public BankStatementParser(String file) {
         pdfReader = new PDFReader(file);
     }
+
+
 
     public ArrayList<Transaction> getTransfers() {
         ArrayList<Transaction> list = new ArrayList();
@@ -33,20 +35,20 @@ public class BankStatementParser {
                     break;
                 case IBAN_INFORMATION:
                     break;
-                case ARCHIVE_NUMBER:    //skipping one is required?
+                case ARCHIVE_NUMBER:
                     if(scanner.hasNextLine()) scanner.nextLine();
                     break;
                 case TRANSACTION:
                     //System.out.println(line + "     TRANSACTIONLINE");
                     Transaction transaction = parseTransactionLine(line);
-                    transaction.setDate(date);
+                    transaction.setDate(date.substring(6, 8) + date.substring(3, 5) + date.substring(0, 2));
                     if(scanner.hasNextLine()) line = scanner.nextLine();   //skip line "TILISIIRTO"
                     //System.out.println(line + "     SKIPPED");
+                    String message = "";
                     if(line.length()>4 && line.substring(5).equals("KORTTIOSTO")) {
                         transaction.setMessage("???");
                     } else if(line.length()>=10 && line.substring(line.length()-10).equals("TILISIIRTO")) {
                         line = "";
-                        String message;
                         while (scanner.hasNextLine() && !(message = scanner.nextLine()).equals("ARKISTOINTITUNNUS")
                                 && !message.equals("MAKSAJAN VIITE") && !message.equals("IBAN")) {
                             //System.out.println(line + "     MESSAGE");
@@ -56,6 +58,7 @@ public class BankStatementParser {
                     } else if(line.length()>5 && line.substring(5).equals("PALVELUMAKSU")) {
                         transaction.setMessage("Pankkimaksut");
                     } else System.out.println("UNDEFINED TRANSACTION METHOD");
+                    if(message.equals("ARKISTOINTITUNNUS")) transaction.setArchivingCode(scanner.nextLine());
                     list.add(transaction);
                     System.out.println(transaction);
                     break;
@@ -107,11 +110,17 @@ public class BankStatementParser {
         if(line.substring(0, 3).equals(" A ")) line = line.substring(3);
         line = line.substring(5);
         Transaction t = new Transaction();
-        t.setNumber(Integer.parseInt(line.substring( line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")+1, line.lastIndexOf(" ") )));
-        t.setName(line.substring(0, line.lastIndexOf(" ")).substring(0, line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")));
-        t.setName(t.getName().trim());
+        t.setNumberInBankStatement(Integer.parseInt(line.substring( line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")+1, line.lastIndexOf(" ") )));
+        t.setPayer(line.substring(0, line.lastIndexOf(" ")).substring(0, line.substring(0, line.lastIndexOf(" ")).lastIndexOf(" ")));
+        t.setPayer(t.getPayer().trim());
+
+        //sum
         String s = line.substring(line.lastIndexOf(" ")+1);
-        t.setSum(s.substring(0, s.length()-3).replace(".", "") + s.substring(s.length()-3));
+        if(s.contains("-"))
+            t.setSum((-1)*Integer.parseInt(s.replace(".", "").replace(",", "").replace("+", "").replace("-", "")));
+        else t.setSum(Integer.parseInt(s.replace(".", "").replace(",", "").replace("+", "").replace("-", "")));
+
+        //t.setSum(Integer.parseInt(s.substring(0, s.length()-3).replace(".", "") + s.substring(s.length()-3)));
         return t;
     }
 

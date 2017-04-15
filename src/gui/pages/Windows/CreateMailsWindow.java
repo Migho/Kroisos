@@ -10,7 +10,7 @@ import services.DebtService;
  */
 public class CreateMailsWindow extends Window {
     private TextField eventId = new TextField("Event number");
-    private TextField expDays = new TextField("Expiration days", "3");
+    private TextField eventStatus = new TextField("Event status", "PENDING");
     private TextField subject = new TextField("Message subject", "Maksuohjeet: §EVENTNAME§, §NAME§");
     private TextArea text = new TextArea();
     private Label info = new Label("You can use following codes in the text:\n" +
@@ -31,16 +31,18 @@ public class CreateMailsWindow extends Window {
                 MessageCreator mCreator = new MessageCreator(subject.getValue(), text.getValue(), "kassa");
                 //mCreator.setExpDays();
                 for(Debt d : DebtService.getDebts(Integer.parseInt(eventId.getValue()))) {
-                    System.out.println(d.getUser() + " " + d.getId());
-                    if(d.getUser()!= null) System.out.println(d.getUser().getId() + " " + d.getUser().getMail());
-                    mCreator.createMail(d);
+                    if(d.getStatus().equals(eventStatus.getValue())) {
+                        System.out.println(d.getUser() + " " + d.getId());
+                        if (d.getUser() != null) System.out.println(d.getUser().getId() + " " + d.getUser().getMail());
+                        mCreator.createMail(d);
+                    }
                 }
                 close();
             }
         });
 
         VerticalLayout content = new VerticalLayout();
-        content.addComponents(eventId, expDays, subject, info, text, save);
+        content.addComponents(eventId, eventStatus, subject, info, text, save);
         content.setMargin(true);
         setContent(content);
     }

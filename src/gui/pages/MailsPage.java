@@ -11,6 +11,7 @@ import services.MailService;
 
 public class MailsPage extends VerticalLayout {
 
+    public static final String NAME = "mails";
     private Sender sender;
 
     public MailsPage() {
@@ -25,7 +26,7 @@ public class MailsPage extends VerticalLayout {
     private ConnectWindow cWindow = new ConnectWindow();
     private SendMailsWindow sWindow;
 
-    private void initComponents(){
+    public void initComponents(){
         createMails.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -51,5 +52,7 @@ public class MailsPage extends VerticalLayout {
         mailList.setSizeFull();
         addComponents(actionButtons, mailList);
     }
+
+
 
 }

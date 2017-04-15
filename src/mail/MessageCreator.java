@@ -51,10 +51,9 @@ public class MessageCreator {
             c.setTime(new Date());
             c.add(Calendar.DATE, expDays);
             d.setDueDate(c.getTime());
+            DebtService.updateDebt(d);  //update due date to the debt
         } else c.setTime(d.getDueDate());
         changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
-        //update due date to the debt
-        DebtService.updateDebt(d);
         return MailService.addMail(new Mail(0, d.getId(), sendUser, d.getUser().getMail(),
                 subjectAdapter(changeList), messageAdapter(changeList), "NOT_SENT"));
     }

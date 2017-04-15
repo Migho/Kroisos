@@ -27,11 +27,10 @@ public class DebtsPage extends VerticalLayout {
     private void initComponents(){
         debtList.setWidth("800");
         debtList.setContainerDataSource(new BeanItemContainer<>(Debt.class, DebtService.getDebts()));
-        debtList.setColumnOrder("user", "eventId", "sum", "dueDate", "status", "penalty", "lastMailSent", "info");
+        debtList.setColumnOrder("user", "referenceNumber", "eventId", "sum", "dueDate", "status", "penalty", "lastMailSent", "info");
         debtList.removeColumn("checkDigit");
         debtList.removeColumn("id");
         debtList.removeColumn("participantNumber");
-        debtList.removeColumn("referenceNumber");
         debtList.removeColumn("userName");
         setMargin(true);
 
