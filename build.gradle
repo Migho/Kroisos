@@ -1,0 +1,31 @@
+plugins {
+    id 'fi.jasoft.plugin.vaadin' version '1.1.6'
+}
+
+apply plugin: 'idea'
+
+version '0.0.1'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}
+
+// For some reason Vaadin 8 wont work.
+vaadin.version '7.7.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // The production code uses the SLF4J logging API at compile time
+    compile 'org.slf4j:slf4j-api:1.7.22'
+    // Test framework
+    testCompile 'junit:junit:4.12'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.3'
+    // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.5'
+    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+    compile group: 'javax.mail', name: 'javax.mail-api', version: '1.5.6'
+}

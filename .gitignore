@@ -1,5 +1,9 @@
 *.iml
 .idea/
 out/
-tiliotteet/
-lib/mysql-connector-java-5.1.40-bin.jar
+
+# Gradle files
+build/
+gradle/
+.gradle/
+gradle.properties
