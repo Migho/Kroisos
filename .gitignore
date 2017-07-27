@@ -4,6 +4,5 @@ out/
 
 # Gradle files
 build/
-gradle/
-.gradle/
-gradle.properties
+.gradle
+!gradle-wrapper.jar
