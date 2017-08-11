@@ -33,6 +33,16 @@ repositories {
 }
 
 dependencies {
+    //spark related deps. Clean later.
+    compile group: 'com.sparkjava', name: 'spark-core', version:'2.5'
+    compile group: 'com.sparkjava', name: 'spark-debug-tools', version: '0.5'
+    compile group: 'com.sparkjava', name: 'spark-template-velocity', version:'2.3'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version:'1.7.13'
+    compile group: 'org.projectlombok', name: 'lombok', version:'1.16.6'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.5.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.5.1'
+    compile group: 'com.google.guava', name: 'guava', version:'19.0'
+    compile group: 'org.mindrot', name: 'jbcrypt', version:'0.3m'
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.22'
     // Test framework
