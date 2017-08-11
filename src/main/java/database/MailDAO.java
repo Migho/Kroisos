@@ -1,4 +1,4 @@
-package services;
+package database;
 
 import models.Mail;
 
@@ -10,11 +10,11 @@ import java.util.List;
 /**
  * Created by migho on 17.2.2017.
  */
-public class MailService {
+public class MailDAO {
 
     public static List<Mail> getMails() {
         List<Mail> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
                 "JOIN event e ON d.eventid = e.id JOIN user u ON d.userid = u.id");
         try {
             while(rs.next()) {
@@ -36,10 +36,10 @@ public class MailService {
         List<Mail> list = new ArrayList<>();
         ResultSet rs;
         if(eventNumber == 0)
-            rs = SQLconnector.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
+            rs = SQLSession.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
                     "JOIN event e ON d.eventid = e.id JOIN user u ON d.userid = u.id WHERE m.status=?", status);
         else
-            rs = SQLconnector.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
+            rs = SQLSession.runSQLQuery("SELECT * FROM mail m JOIN debt d ON m.debtid = d.id " +
                     "JOIN event e ON d.eventid = e.id JOIN user u ON d.userid = u.id WHERE e.id=? AND m.status=?", new Object[] {eventNumber, status});
         try {
             while(rs.next()) {
@@ -52,13 +52,13 @@ public class MailService {
     }
 
     public static int addMail(Mail m) {
-        return SQLconnector.runSQLUpdate("INSERT INTO mail SET debtid=?, sender=?, subject=?," +
+        return SQLSession.runSQLUpdate("INSERT INTO mail SET debtid=?, sender=?, subject=?," +
                         "message=?, status=?",
                 new Object[] {m.getDebtId(), m.getSender(), m.getSubject(), m.getMessage(), m.getStatus()});
     }
 
     public static int updateMail(Mail m) {
-        return SQLconnector.runSQLUpdate("UPDATE mail SET debtid=?, sender=?, subject=?, message=?, status=? WHERE id=?",
+        return SQLSession.runSQLUpdate("UPDATE mail SET debtid=?, sender=?, subject=?, message=?, status=? WHERE id=?",
                 m.getDebtId(), m.getSender(), m.getSubject(), m.getMessage(), m.getStatus(), m.getId());
     }
 

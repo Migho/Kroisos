@@ -1,11 +1,11 @@
-package services;
+package database;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.sql.*;
 
-class SQLconnector {
+class SQLSession {
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost:3306/kroisos?serverTimezone=UTC";
 

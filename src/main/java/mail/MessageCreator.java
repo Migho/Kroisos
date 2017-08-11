@@ -2,9 +2,9 @@ package mail;
 
 import models.Debt;
 import models.Mail;
-import services.DebtService;
-import services.EventService;
-import services.MailService;
+import database.DebtDAO;
+import database.EventDAO;
+import database.MailDAO;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -12,7 +12,7 @@ import java.util.*;
 public class MessageCreator {
 
     private int expDays = 14;
-    private EventService eManager = new EventService();
+    private EventDAO eManager = new EventDAO();
     private String subject;
     private String message;
     private String sendUser;
@@ -51,10 +51,10 @@ public class MessageCreator {
             c.setTime(new Date());
             c.add(Calendar.DATE, expDays);
             d.setDueDate(c.getTime());
-            DebtService.updateDebt(d);  //update due date to the debt
+            DebtDAO.updateDebt(d);  //update due date to the debt
         } else c.setTime(d.getDueDate());
         changeList.put("§DUEDATE§", daySdf.format(c.getTime()));
-        return MailService.addMail(new Mail(0, d.getId(), sendUser, d.getUser().getMail(),
+        return MailDAO.addMail(new Mail(0, d.getId(), sendUser, d.getUser().getMail(),
                 subjectAdapter(changeList), messageAdapter(changeList), "NOT_SENT"));
     }
 

@@ -1,10 +1,10 @@
-package services;
+package database;
 
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class EventService {
+public class EventDAO {
 
     public static String getEventDescription(int eventNumber) {
         return (String)getStringField(eventNumber, "description");
@@ -19,7 +19,7 @@ public class EventService {
     }
 
     private static Integer getIntField(int eventNumber, String columnName) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
         if(rs != null) {
             try {
                 if (rs.next()) {
@@ -35,7 +35,7 @@ public class EventService {
     }
 
     private static String getStringField(int eventNumber, String columnName) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM event WHERE id=?;", new Object[] {eventNumber});
         if(rs != null) {
             try {
                 if (rs.next()) {

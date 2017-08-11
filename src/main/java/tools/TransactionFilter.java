@@ -2,24 +2,24 @@ package tools;
 
 import models.Debt;
 import models.Transaction;
-import services.DebtService;
-import services.EntryService;
-import services.EventService;
-import services.TransactionService;
+import database.DebtDAO;
+import database.EntryDAO;
+import database.EventDAO;
+import database.TransactionDAO;
 
 import java.util.ArrayList;
 
 public class TransactionFilter {
 
-    private DebtService dManager = new DebtService();
-    private EventService eManager = new EventService();
+    private DebtDAO dManager = new DebtDAO();
+    private EventDAO eManager = new EventDAO();
 
     public TransactionFilter(String file) {
         BankStatementParser parser = new BankStatementParser(file);
         ArrayList<Transaction> list = filterTransactions(parser.getTransfers());
         //tässä välissä pitäisi tehdä manuaaliset työt.
-        list = TransactionService.saveTransactions(list);
-        EntryService.saveEntries(list, 6);
+        list = TransactionDAO.saveTransactions(list);
+        EntryDAO.saveEntries(list, 6);
         //all done?
         //Pitäis viä tallentaa tiliote
     }

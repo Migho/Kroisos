@@ -1,8 +1,7 @@
 package mail;
 
-import models.Debt;
 import models.Mail;
-import services.MailService;
+import database.MailDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class Sender extends Thread {
      */
     public void run() {
         if(eventNumber == -1 || status == null) return;
-        sendListOfMails(MailService.getMails(eventNumber, status), 3);
+        sendListOfMails(MailDAO.getMails(eventNumber, status), 3);
     }
 
     /**
@@ -65,7 +64,7 @@ public class Sender extends Thread {
                 m.setStatus("SENT");
             }
             //update mail status
-            MailService.updateMail(m);
+            MailDAO.updateMail(m);
             //sleep some time in order to prevent possible spam filter triggering
             try {
                 Thread.sleep(sleepTime);

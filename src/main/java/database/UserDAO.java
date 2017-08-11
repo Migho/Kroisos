@@ -1,14 +1,14 @@
-package services;
+package database;
 
 import models.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserService {
+public class UserDAO {
 
     public static User getUser(int userId) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM user WHERE id=?", userId);
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM user WHERE id=?", userId);
         try {
             rs.next();
             return fetchUser(rs);
@@ -21,10 +21,10 @@ public class UserService {
     public static User addUser(User u) {
         if(u.getId() == -1) {
             try {
-                ResultSet rs = SQLconnector.runSQLQuery("SELECT MIN(id) AS x FROM user");
+                ResultSet rs = SQLSession.runSQLQuery("SELECT MIN(id) AS x FROM user");
                 rs.next();
                 u.setId(rs.getInt("x") - 1);
-                SQLconnector.runSQLUpdate("INSERT INTO user (id, username, name, mail) " +
+                SQLSession.runSQLUpdate("INSERT INTO user (id, username, name, mail) " +
                         "VALUES (?, ?, ?, ?)", new Object[]{u.getId(), u.getUsername(), u.getName(), u.getMail()});
                 return u;
             } catch (SQLException e) {
@@ -32,7 +32,7 @@ public class UserService {
                 return null;
             }
         }
-        SQLconnector.runSQLUpdate("INSERT INTO user (username, name, mail) " +
+        SQLSession.runSQLUpdate("INSERT INTO user (username, name, mail) " +
                 "VALUES (?, ?, ?)", new Object[]{u.getUsername(), u.getName(), u.getMail()});
         return u;
     }

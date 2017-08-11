@@ -1,4 +1,4 @@
-package services;
+package database;
 
 import tools.ReferenceNumberGenerator;
 import models.Debt;
@@ -8,12 +8,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebtService {
+public class DebtDAO {
 
     public static List<Debt> getDebts() {
         List<Debt> list = new ArrayList<>();
-        //ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id");
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d");
+        //ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id");
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt d");
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -26,8 +26,8 @@ public class DebtService {
 
     public static List<Debt> getDebts(int eventNumber) {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id WHERE eventid=?", eventNumber);
-        //ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt d WHERE eventid=?", eventNumber);
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt d LEFT JOIN user u ON d.userid = u.id WHERE eventid=?", eventNumber);
+        //ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt d WHERE eventid=?", eventNumber);
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -40,7 +40,7 @@ public class DebtService {
 
     public static Debt getDebt(long referenceNumber) {
         Debt debt = new Debt();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE reference_number=?", referenceNumber);
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt WHERE reference_number=?", referenceNumber);
         try {
             if(rs.next()) {
                 debt = fetchDebt(rs);
@@ -53,7 +53,7 @@ public class DebtService {
 
 
     public static int addDebt(Debt d) {
-        int result = SQLconnector.runSQLUpdate("INSERT INTO debt (reference_number, eventid, userid, sum, info) " +
+        int result = SQLSession.runSQLUpdate("INSERT INTO debt (reference_number, eventid, userid, sum, info) " +
                         "VALUES (?, ?, ?, ?, ?)",
                 new Object[] {d.getReferenceNumber(), d.getEventId(), d.getUser().getId(), d.getSum(), d.getInfo()});
         if(result != 1) ; //do some shit
@@ -61,7 +61,7 @@ public class DebtService {
     }
 
     public static int updateDebt(Debt d) {
-        int result = SQLconnector.runSQLUpdate("UPDATE debt SET reference_number=?, eventid=?, userid=?, sum=?, due_date=?, status=?, last_mail_sent=?, info=?, penalty=? WHERE id=?",
+        int result = SQLSession.runSQLUpdate("UPDATE debt SET reference_number=?, eventid=?, userid=?, sum=?, due_date=?, status=?, last_mail_sent=?, info=?, penalty=? WHERE id=?",
                 d.getReferenceNumber(), d.getEventId(), d.getUser().getId(), d.getSum(), d.getDueDate(), d.getStatus(), d.getLastMailSent(), d.getInfo(), d.getPenalty(), d.getId());
         if(result != 1) ; //do some shit
         return 0;
@@ -84,12 +84,12 @@ public class DebtService {
 
     public static int writeDebts() {
         //pitäis poistaa tai uudelleennimetä
-        SQLconnector.close();
+        SQLSession.close();
         return 0;
     }
     public List<Debt> getAllEventDebts(int eventNumber) {
         List<Debt> list = new ArrayList<>();
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE event=?;", eventNumber);
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt WHERE event=?;", eventNumber);
         try {
             while(rs.next()) {
                 list.add(fetchDebt(rs));
@@ -101,14 +101,14 @@ public class DebtService {
     }
 
     public static int markDebtPaid(long referenceNumber, int sum) {
-        ResultSet rs = SQLconnector.runSQLQuery("SELECT * FROM debt WHERE reference_number=?;", referenceNumber);
+        ResultSet rs = SQLSession.runSQLQuery("SELECT * FROM debt WHERE reference_number=?;", referenceNumber);
         try {
             if(rs.next()) {
                 String status = rs.getString("status");
                 if(status.equals("PENDING") || status.equals("LATE") || status.equals("ACCRUAL")) {
-                    return SQLconnector.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "PAID", referenceNumber);
+                    return SQLSession.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "PAID", referenceNumber);
                 }
-                return SQLconnector.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "AMOUNT_ERR", referenceNumber);
+                return SQLSession.runSQLUpdate("UPDATE debt SET status=? WHERE reference_number=?;", "AMOUNT_ERR", referenceNumber);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -141,7 +141,7 @@ public class DebtService {
             d.setInfo(rs.getString("info"));
             d.setDueDate(rs.getDate("due_date"));
             d.setStatus(rs.getString("status"));
-            d.setUser(UserService.getUser(rs.getInt("userid")));
+            d.setUser(UserDAO.getUser(rs.getInt("userid")));
         } catch (SQLException e) {
             e.printStackTrace();
         }
