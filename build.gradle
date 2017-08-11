@@ -1,32 +1,7 @@
-plugins {
-    id 'fi.jasoft.plugin.vaadin' version '1.1.6'
-}
-
 apply plugin: 'idea'
 apply plugin: 'war'
  
 version '0.0.1'
-
-task stage() {
-    dependsOn clean, war
-}
-war.mustRunAfter clean
-
-task copyToLib(type: Copy) {
-    into "$buildDir/server"
-    from(configurations.compile) {
-        include "webapp-runner*"
-    }
-}
-
-stage.dependsOn(copyToLib)
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
-}
-
-// For some reason Vaadin 8 wont work.
-vaadin.version '7.7.8'
 
 repositories {
     mavenCentral()
@@ -53,6 +28,4 @@ dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.5'
     // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
     compile group: 'javax.mail', name: 'javax.mail-api', version: '1.5.6'
-    // Webapp runner
-    compile 'com.github.jsimone:webapp-runner:8.5.11.3'
 }
