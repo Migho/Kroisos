@@ -1,0 +1,31 @@
+#macro(mainLayout)
+<html>
+<head>
+    <title>$msg.get("TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<header>
+    <nav>
+        <ul id="sidenav">
+            <li>
+                <form method="post" action="$WebPath.getLOGOUT()">
+                    <button id="logout">$msg.get("SIDENAV_LOGOUT")</button>
+                </form>
+                <form method="post" action="$WebPath.getPROFILE()">
+                    <button id="logout">$msg.get("SIDENAV_PROFILE")</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main>
+    <div id="content">
+        $bodyContent
+    </div>
+</main>
+</body>
+</html>
+#end

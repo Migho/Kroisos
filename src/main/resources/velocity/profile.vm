@@ -1,0 +1,6 @@
+#parse("/velocity/layout.vm")
+#@mainLayout()
+<form id="loginForm" method="post">
+    <p>$msg.get("HALOO", $WebPath.getINDEX())</p>
+</form>
+#end
