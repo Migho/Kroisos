@@ -1,3 +1,4 @@
+**Projekti hyllytetty ajanpuutteen vuoksi**
 # Kroisos
 _Make TKO-äly bookkeeping great again!_
 
